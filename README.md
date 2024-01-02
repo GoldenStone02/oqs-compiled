@@ -7,7 +7,7 @@ In most normal circumstances, usage of [oqs-provider's official Docker image of 
 
 If you do encounter any issues, do consult and sift through Open Quantum Safe's official documentations for similar issues and installation procedures.
 
-Official Githubs
+Official Githubs:
 - [OpenSSL](https://github.com/openssl/openssl)
 - [liboqs (0.9.1)](https://github.com/open-quantum-safe/liboqs/tree/0.9.1)
 - [oqs-provider](https://github.com/open-quantum-safe/oqs-provider/tree/main)
@@ -25,15 +25,15 @@ Also note that the following library versions are used for this specific install
 ## 📌 Prerequsities
 Ensure that the following requirements are met for your respective Windows development environment before continuing with the installation guide. 
 
-- An `x64` Windows Environment [^1]
+- An `x64` Windows Environment
 - `Visual Studio 2022`
 - Strawberry Perl
 - NASM
 
-[^1]: Although not recommended, it should be possible to conduct the same workflow on a `x86` Windows Environment due to 
-
 ## Installation Steps on Windows
 Before we start our installation process, ensure that you're using `x64 Native Tools Command Prompt for VS 2022`. This provides the majority of the tooling necessary for the installation and  compiling process.
+
+Although not recommended, it should be possible to conduct the same workflow on a `x86` Windows Environment. However, I've not tested the viability of compiling or using an `x86` Windows machine.
 
 ### liboqs
 Install liboqs
@@ -98,7 +98,7 @@ You should see the following output if everything is done correctly.
 openssl.exe list -kem-algorithms -provider oqsprovider
 openssl.exe list -signature-algorithms -provider oqsprovider  
 ```
-![Shows oqs-provider's signatures installed onto the openssl binary](1.png)
+![Shows oqs-provider's signatures installed onto the openssl binary](image/1.png)
 
 ### cURL + modified OpenSSL
 Now for the final part, compiling our modified OpenSSL with our cURL binary. 
@@ -115,7 +115,7 @@ nmake /f Makefile.vc mode=static WITH_DEVEL=C:\Users\User\Desktop\oqs-compiled\i
 ```
 
 ## Debug Commands
-Below are some of the commands that I've used to test to ensure 
+Below are some of the commands that I've used to test to ensure cURL and OpenSSL are functioning as intended.
 
 Test command (Checks if dilithium5 and kyber1024 is accessible using `openssl.exe`)
 > Ensure that the CA.crt is downloaded from `https://test.openquantumsafe.org/CA.crt`
