@@ -1,5 +1,6 @@
-$Main_Dir = "C:\Users\User\Desktop\oqs-compiled"
-$Install_Dir = "C:\Users\User\Desktop\oqs-compiled\install-directory"
+
+$Main_Dir = "C:\Users\User\Desktop\oqs-compiled" # Change this to your desired directory
+$Install_Dir = "C:\Program Files\oqs-curl"
 $SSL_Dir = "C:\Program Files\Common Files\SSL\"
 
 cd $Main_Dir
@@ -16,7 +17,7 @@ cd build
 cmake `
   -GNinja `
   -DCMAKE_C_FLAGS="/wd5105" `
-  -DCMAKE_INSTALL_PREFIX="C:\Users\User\Desktop\oqs-compiled\install-directory\liboqs" `
+  -DCMAKE_INSTALL_PREFIX="$Install_Dir\liboqs" `
   -DCMAKE_BUILD_TYPE=Release `
   -DOQS_ALGS_ENABLED=STD ..
 cmake --build . --parallel 8
@@ -32,7 +33,7 @@ git clone -b master https://github.com/openssl/openssl.git
 cd openssl
 
 ##### Build Phase (openssl) #####
-perl Configure no-shared no-fips VC-WIN64A --prefix="C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl"
+perl Configure no-shared no-fips VC-WIN64A --prefix="$Install_Dir\openssl-curl"
 nmake
 nmake install_sw install_ssldirs
 
@@ -47,10 +48,10 @@ cd oqs-provider
 ##### Build Phase (oqs-provider) #####
 cmake `
   -DCMAKE_C_FLAGS="/wd5105" `
-  -DOPENSSL_ROOT_DIR="C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl" `
-  -Dliboqs_DIR="C:\Users\User\Desktop\oqs-compiled\install-directory\liboqs\lib\cmake\liboqs" `
+  -DOPENSSL_ROOT_DIR="$Install_Dir\openssl-curl" `
+  -Dliboqs_DIR="$Install_Dir\liboqs\lib\cmake\liboqs" `
   -DCMAKE_BUILD_TYPE=Release `
-  -DCMAKE_PREFIX_PATH="C:\Users\User\Desktop\oqs-compiled\install-directory\oqs-provider" `
+  -DCMAKE_PREFIX_PATH="$Install_Dir\oqs-provider" `
   -S . -B build 
 cmake --build build --config=Release
 ctest --test-dir build -C Release
@@ -105,7 +106,7 @@ Start-7z x curl-7.81.0.zip curl-7.81.0 y
 cd curl-7.81.0\winbuild
 
 ##### Build Phase (curl) #####
-nmake /f Makefile.vc mode=static WITH_DEVEL=C:\Users\User\Desktop\oqs-compiled\install-directory WITH_SSL=static MACHINE=x64 SSL_PATH="C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl"
+nmake /f Makefile.vc mode=static WITH_DEVEL="$Install_Dir" WITH_SSL=static MACHINE=x64 SSL_PATH="$Install_Dir\openssl-curl"
 
 Write-Host "`n`n"
 Write-Host "Installation Complete!"

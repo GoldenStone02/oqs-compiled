@@ -1,6 +1,6 @@
 # 📚 Installation Instruction Manual 
 
-Serving as a form of guidance, this manual follows through and details some of the major commands that I've utilized whilst attempting to install the Official Open Quantum Safe (OQS) curl binary with its additional dependencies for Windows. 
+Serving as a form of guidance, this manual follows through and details some of the major commands that I've utilized whilst attempting to install the official Open Quantum Safe (OQS) curl binary with its additional dependencies for Windows. 
 
 
 In most normal circumstances, usage of [oqs-provider's official Docker image of curl](https://hub.docker.com/r/openquantumsafe/curl) should suffice as its easy to setup with little hassle, is able to uninstall cleanly, and gets updates somewhat frequently. However, in the odd situation where you would need to have it installed onto a Windows environment, you're in luck!
@@ -15,7 +15,7 @@ Official Githubs:
 
 ## ⚠️ Important Note
 
-If there are any issues regarding the installation of curl, ensure that your configuration file for OpenSSL has been modified to align with specified configs below.
+If there are any issues regarding the installation of curl, ensure that your configuration file for OpenSSL has been modified to align with [specified configs](#openssl-configurations) below.
 
 Also note that the following library versions are used for this specific installation (31/12/2023)
 - liboqs, **version 0.9.1**
@@ -31,7 +31,7 @@ Ensure that the following requirements are met for your respective Windows devel
 - NASM
 
 ## Installation Steps on Windows
-Before we start our installation process, ensure that you're using `x64 Native Tools Command Prompt for VS 2022`. This provides the majority of the tooling necessary for the installation and  compiling process.
+Before we start our installation process, ensure that you're using `x64 Native Tools Command Prompt for VS 2022`. This provides the majority of the tooling necessary for the installation and  compiling process. 
 
 Although not recommended, it should be possible to conduct the same workflow on a `x86` Windows Environment. However, I've not tested the viability of compiling or using an `x86` Windows machine.
 
@@ -65,7 +65,9 @@ nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
 
 ### OQS-provider
 Install OQS-provider
-> Put `libcrypto-x64.dll` and other dlls found in `C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl\bin` into `C:\Windows\System32`
+> Put `libcrypto-x64.dll` and other dlls found in `C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl\bin` into `C:\Windows\System32`.
+> This exception only occurs if openssl is compiled without the `no-shared` argument.
+
 ```powershell
 git clone --depth 1 --branch 0.5.3 https://github.com/open-quantum-safe/oqs-provider.git
 cmake -DOPENSSL_ROOT_DIR="C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl" -Dliboqs_DIR="C:\Users\User\Desktop\oqs-compiled\install-directory\liboqs\lib\cmake\liboqs" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="C:\Users\User\Desktop\oqs-compiled\install-directory\oqs-provider" -DOQS_KEM_ENCODERS=ON -S . -B build 
@@ -76,7 +78,7 @@ cmake --install build
 ```
 
 #### OpenSSL Configurations
-Ensure that the following items are found within your `openssl.cnf` file.
+Ensure that the following items are found within your `openssl.cnf` file. Default location for the configurations is `C:/Program Files/Common Files/SSL/`.
 ```conf
 [provider_sect]
 default = default_sect
@@ -128,6 +130,8 @@ openssl.exe s_client -CAfile CA.crt --connect test.openquantumsafe.org:6292 --cu
 Generate OpenSSL certificate (with dilithium5)
 ```
 openssl.exe req -x509 -new -newkey dilithium5 -keyout CA.key -out CA.crt -nodes -subj "/CN=oqstest CA" -days 365 -config ${OPENSSL_CNF}
+
+openssl.exe x509 -req -in server.csr -out server.crt -CA CA.crt -CAkey CA.key -CAcreateserial -days 365
 ```
 
 
