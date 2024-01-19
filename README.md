@@ -30,13 +30,26 @@ Ensure that the following requirements are met for your respective Windows devel
 - Strawberry Perl
 - NASM
 
-## Installation Steps on Windows
+## Pre-Built Binaries
+In the `build/` directory, there are two 7zip files, `oqs-curl.7z` and `SSL.7z`. `oqs-curl.7z` contains precompiled liboqs, oqs-provider, OpenSSL and curl, while `SSL.7z` contains the necessary files for OpenSSL and oqs-provider to work together.
+
+
+Note the following paths as these are the location which you should be placing the contents:
+- `oqs-curl.7z` - `C:\Program Files\oqs-curl\`
+- `SSL.7z` - `C:\Program Files\Common Files\SSL`
+
+If you are a risk-averse and know better, you're free to follow through with the manual installation instructions or the powershell script ([install.ps1](/scripts/install.ps1)). 
+
+However, its worth noting that the script **DOES NOT** change the SSL configurations. As such, you will still need to follow [this](#openssl-configurations) for the necessary configurations.
+
+## Manual Installation  on Windows
 Before we start our installation process, ensure that you're using `x64 Native Tools Command Prompt for VS 2022`. This provides the majority of the tooling necessary for the installation and  compiling process. 
 
 Although not recommended, it should be possible to conduct the same workflow on a `x86` Windows Environment. However, I've not tested the viability of compiling or using an `x86` Windows machine.
 
+> It's worth noting that all the following commands are done within a x64 Windows Virtual Machine.
 ### liboqs
-Install liboqs
+The following commands are used to build liboqs in preparation for oqs-provider later on.
 ```powershell
 git clone --branch 0.9.1 https://github.com/open-quantum-safe/liboqs.git
 cd liboqs
@@ -49,7 +62,7 @@ ninja install
 ```
 
 ### OpenSSL
-Installs OpenSSL
+Now we will be building OpenSSL which will be used alongside oqs-provider within the curl binary. Do note this section of the installation guide will take the longest, *so grab yourself some coffee and relax for a while*
 > Note that it will create a directory at `C:/Program Files/Common Files/SSL/`
 ```powershell
 git clone -b master https://github.com/openssl/openssl.git
@@ -64,9 +77,9 @@ nmake test VERBOSE_FAILURE=yes TESTS=-test_fuzz* HARNESS_JOBS=4
 ```
 
 ### OQS-provider
-Install OQS-provider
+Next, we will have to compile and build oqs-provider into our OpenSSL instance.
 > Put `libcrypto-x64.dll` and other dlls found in `C:\Users\User\Desktop\oqs-compiled\install-directory\openssl-curl\bin` into `C:\Windows\System32`.
-> This exception only occurs if openssl is compiled without the `no-shared` argument.
+> This exception only occurs if OpenSSL is compiled without the `no-shared` argument.
 
 ```powershell
 git clone --depth 1 --branch 0.5.3 https://github.com/open-quantum-safe/oqs-provider.git
@@ -123,6 +136,7 @@ Test command (Checks if dilithium5 and kyber1024 is accessible using `openssl.ex
 > Ensure that the CA.crt is downloaded from `https://test.openquantumsafe.org/CA.crt`
 ```powershell
 curl --cacert CA.crt https://test.openquantumsafe.org:6292 --curves p521_kyber1024
+curl --cacert "C:\Users\felix\OneDrive\Desktop\program stuff\FYP-application-backend\ngnix\pki\CA.crt" https://quantum.backend:4433 --curves p521_kyber1024
 
 openssl.exe s_client -CAfile CA.crt --connect test.openquantumsafe.org:6292 --curves p521_kyber1024
 ```

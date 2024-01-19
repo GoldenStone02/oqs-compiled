@@ -2,3 +2,4 @@ liboqs/
 !install-directory/liboqs
 oqs-provider/
 curl*
+oqs-compiled.*
